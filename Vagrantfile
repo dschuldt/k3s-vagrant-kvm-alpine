@@ -28,7 +28,7 @@ Vagrant.configure("2") do |config|
       override.vm.guest = options.fetch('vmguest')
       libvirt.channel :type => 'unix', :target_name => 'org.qemu.guest_agent.0', :target_type => 'virtio'
     end
-    #server.vm.provision "shell", path: "./install_docker.sh"
+    server.vm.provision "shell", path: "k3s/install_docker.sh"
     server.vm.provision "file", source: "k3s/", destination: "/tmp/"
     server.vm.provision "shell", path: "k3s/prepare.sh"
     server.vm.provision :reload
@@ -57,7 +57,7 @@ Vagrant.configure("2") do |config|
         override.vm.guest = options.fetch('vmguest')
         libvirt.channel :type => 'unix', :target_name => 'org.qemu.guest_agent.0', :target_type => 'virtio'
       end
-      #agent.vm.provision "shell", path: "./install_docker.sh"
+      agent.vm.provision "shell", path: "k3s/install_docker.sh"
       agent.vm.provision "file", source: "k3s/", destination: "/tmp/"
       agent.vm.provision "shell", path: "k3s/prepare.sh"
       agent.vm.provision :reload

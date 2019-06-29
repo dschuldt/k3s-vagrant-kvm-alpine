@@ -1,20 +1,7 @@
 #!/bin/sh
 
 # alpine setup
-sudo echo "cgroup /sys/fs/cgroup cgroup defaults 0 0" >> /etc/fstab
-sudo cat >> /etc/cgconfig.conf <<EOF
-mount {
-cpuacct = /cgroup/cpuacct;
-memory = /cgroup/memory;
-devices = /cgroup/devices;
-freezer = /cgroup/freezer;
-net_cls = /cgroup/net_cls;
-blkio = /cgroup/blkio;
-cpuset = /cgroup/cpuset;
-cpu = /cgroup/cpu;
-}
-EOF
-sudo echo "default_kernel_opts=...  cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory"  >> /etc/update-extlinux.conf 
+sudo echo 'default_kernel_opts="quiet rootfstype=ext4 cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1 swapaccount=1"' >> /etc/update-extlinux.conf 
 sudo update-extlinux
 
 # k3s setup
