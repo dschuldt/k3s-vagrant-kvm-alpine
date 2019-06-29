@@ -1,0 +1,12 @@
+vagrantbox: generic/alpine310
+vmguest: :alpine
+network: 192.168.200.
+server:
+  hostname: k3s-server
+  cpu: 2
+  ram: 2048
+agent:
+  hostname: k3s-agent 
+  count: 2
+  cpu: 2
+  ram: 2048 
