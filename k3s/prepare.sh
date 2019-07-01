@@ -9,5 +9,6 @@ sudo echo "127.0.0.1    localhost localhost.localdomain" >> /etc/hosts
 sudo mv /tmp/k3s / 
 sudo chmod +x /k3s/*
 sudo mv /k3s/k3s /usr/local/bin/
+sudo mkdir -p /var/lib/rancher/k3s/server/manifests/ && chmod -R 0777 /var/lib/rancher/k3s/server/manifests/
 
 exit 0

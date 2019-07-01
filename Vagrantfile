@@ -31,6 +31,7 @@ Vagrant.configure("2") do |config|
     server.vm.provision "shell", path: "k3s/install_docker.sh"
     server.vm.provision "file", source: "k3s/", destination: "/tmp/"
     server.vm.provision "shell", path: "k3s/prepare.sh"
+    server.vm.provision "file", source: "manifests", destination: "/var/lib/rancher/k3s/server/"
     server.vm.provision :reload
     server.trigger.after :up do |trigger|
       trigger.name = "k3s_server_start"
@@ -40,8 +41,13 @@ Vagrant.configure("2") do |config|
     server.trigger.after :up do |trigger|
       trigger.name = "print_kubeconfig"
       trigger.info = "print kubeconfig"
-      trigger.run_remote = {inline: "sleep 15s; sudo cat /etc/rancher/k3s/k3s.yaml"}
-    end   
+      trigger.run_remote = {inline: "sleep 15s; sudo chmod 0777 /etc/rancher/k3s/k3s.yaml; sudo cat /etc/rancher/k3s/k3s.yaml"}
+    end
+    server.trigger.after :up do |trigger|
+      trigger.name = "download_kubeconfig"
+      trigger.info = "download kubeconfig"
+      trigger.run = {inline: "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .vagrant/machines/k3sserver/libvirt/private_key -q vagrant@" +options.fetch('network') + '100'":/etc/rancher/k3s/k3s.yaml ./config"}
+    end      
   end
 
   # --- AGENTS ---
