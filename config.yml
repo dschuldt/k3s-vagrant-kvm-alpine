@@ -9,4 +9,4 @@ agent:
   hostname: k3s-agent 
   count: 2
   cpu: 2
-  ram: 2048 
+  ram: 4096
