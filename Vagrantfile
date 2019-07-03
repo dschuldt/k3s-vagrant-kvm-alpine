@@ -28,21 +28,33 @@ Vagrant.configure("2") do |config|
       override.vm.guest = options.fetch('vmguest')
       libvirt.channel :type => 'unix', :target_name => 'org.qemu.guest_agent.0', :target_type => 'virtio'
     end
-    server.vm.provision "shell", path: "k3s/install_docker.sh"
-    server.vm.provision "file", source: "k3s/", destination: "/tmp/"
-    server.vm.provision "shell", path: "k3s/prepare.sh"
-    server.vm.provision "file", source: "manifests", destination: "/var/lib/rancher/k3s/server/"
+    server.vm.provision "shell", path: "sh/install_docker.sh"
+    server.vm.provision "file", source: "sh/", destination: "/home/vagrant/"
+    server.vm.provision "shell", path: "sh/prepare.sh"
+    server.vm.provision "file", source: "manifests/", destination: "/var/lib/rancher/k3s/server/"
+    server.vm.provision "file", source: "istio-init/", destination: "/home/vagrant/"
+    server.vm.provision "file", source: "istio/", destination: "/home/vagrant/"
     server.vm.provision :reload
     server.trigger.after :up do |trigger|
       trigger.name = "k3s_server_start"
       trigger.info = "start k3s server"
-      trigger.run_remote = {inline: "nohup /k3s/start_k3s_server.sh " + options.fetch('network') + '100' + " 0<&- &> /k3s/k3s.log &"}
+      trigger.run_remote = {inline: "nohup /home/vagrant/sh/start_k3s_server.sh " + options.fetch('network') + '100' + " 0<&- &> /home/vagrant/k3s.log & echo 'start k3sserver trigger' >> /home/vagrant/trigger.log"}
     end
     server.trigger.after :up do |trigger|
-      trigger.name = "print_kubeconfig"
-      trigger.info = "print kubeconfig"
-      trigger.run_remote = {inline: "sleep 15s; sudo chmod 0777 /etc/rancher/k3s/k3s.yaml; sudo cat /etc/rancher/k3s/k3s.yaml"}
+      trigger.name = "postinstall_tasks"
+      trigger.info = "postinstall tasks"
+      trigger.run_remote = {path: "sh/postinstall.sh"}
     end
+    server.trigger.after :up do |trigger|
+      trigger.name = "install_tiller"
+      trigger.info = "install tiller"
+      trigger.run_remote = {path: "sh/install_tiller.sh"}
+    end
+    server.trigger.after :up do |trigger|
+      trigger.name = "install_istio"
+      trigger.info = "install istio"
+      trigger.run_remote = {path: "sh/install_istio.sh"}
+    end            
     server.trigger.after :up do |trigger|
       trigger.name = "download_kubeconfig"
       trigger.info = "download kubeconfig"
@@ -63,14 +75,14 @@ Vagrant.configure("2") do |config|
         override.vm.guest = options.fetch('vmguest')
         libvirt.channel :type => 'unix', :target_name => 'org.qemu.guest_agent.0', :target_type => 'virtio'
       end
-      agent.vm.provision "shell", path: "k3s/install_docker.sh"
-      agent.vm.provision "file", source: "k3s/", destination: "/tmp/"
-      agent.vm.provision "shell", path: "k3s/prepare.sh"
+      agent.vm.provision "shell", path: "sh/install_docker.sh"
+      agent.vm.provision "file", source: "sh/", destination: "/home/vagrant/"
+      agent.vm.provision "shell", path: "sh/prepare.sh"
       agent.vm.provision :reload
       agent.trigger.after :up do |trigger|
         trigger.name = "k3s_agent_start"
         trigger.info = "start k3s agent"
-        trigger.run_remote = {inline: "nohup /k3s/start_k3s_agent.sh https://" + options.fetch('network') + '100:6443' + " 0<&- &> /k3s/k3s.log &"}
+        trigger.run_remote = {inline: "nohup /home/vagrant/sh/start_k3s_agent.sh https://" + options.fetch('network') + '100:6443' + " 0<&- &> /home/vagrant/k3s.log &"}
       end  
     end
   end

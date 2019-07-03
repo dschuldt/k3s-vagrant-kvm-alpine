@@ -1,6 +1,6 @@
 # k3s-vagrant-kvm-alpine
 
-Bootstrap a Kubernetes cluster with [Rancher k3s](https://github.com/rancher/k3s), [KVM]([https://www.linux-kvm.org/page/Main_Page](https://www.linux-kvm.org/page/Main_Page)) and [Vagrant](https://www.vagrantup.com/) in 90 seconds. (Ok, if you already have a local copy of the vagrant box; otherwise it depends on your download speed)
+Bootstrap a Kubernetes cluster with [Rancher k3s](https://github.com/rancher/k3s), [KVM]([https://www.linux-kvm.org/page/Main_Page](https://www.linux-kvm.org/page/Main_Page)) and [Vagrant](https://www.vagrantup.com/) <del>in 90 seconds. (Ok, if you already have a local copy of the vagrant box; otherwise it depends on your download speed)</del>del>. I'm afraid this is not true any longer. But you get a tiller and istio installation with kiali as well :)
 
 ## Prerequisites
 - A working qemu/kvm and vagrant setup
